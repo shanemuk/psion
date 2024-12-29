@@ -1,0 +1,1687 @@
+REM   WARDROUND for the Psion Series 3a
+REM        The Director's Cut
+REM     Author: Dr Shane McKee. 2024 
+
+
+APP WardRnd
+  EXT "PAT"
+  PATH "\PAT"
+  ICON "LOC::M:\PIC\WARDRND.PIC"
+  TYPE $1003
+ENDA
+
+
+PROC Wardrnd:
+  GLOBAL Pat$(25),Con$(255),Hno$(11),War$(255),Dob&
+  GLOBAL Adm&,Dis&,Regown$(30),Code$(10),Adt$(255)
+  GLOBAL Dia1t$(255),Rt%,K%,Res$(255),Ffm$(255)
+  GLOBAL Med$(255),War%,Con%,H%,Diag$(255)
+  GLOBAL Adr$(125),Gp$(125),Adt%,Archfil$(128),Gi%(32)
+  GLOBAL Ft%,Ft2%,Ft3%,Ft4%,Flg%
+  GLOBAL Find$(20),Foldlab$(32),Km%,Sw%,Scrw%
+  GLOBAL Wd%(20),Curp%,Curw%,Pick$(25),Pick%
+  GLOBAL Tabwid%,Usty%,G1%,G2%,Wg1%
+  GLOBAL Wg2%,Det%,I$(10,40),N%,B%
+  GLOBAL Ge%(6),Ver$(30)
+  LOCAL lc2z%,lc1z%
+  Regown$=""
+  Ver$="Ver 7.02 13 July 1999"
+  Det%=1
+  Wg1%=250
+  Scrw%=480
+  Wg2%=Scrw%-Wg1%
+  Ft%=6
+  Ft2%=5
+  Ft3%=6
+  Ft4%=10
+  Archfil$="M:\PAT\ARCHFIL.PAT"
+  Usty%=32
+  Tabwid%=Wg1%/2
+  G2%=gCREATE(Wg1%+2,0,Wg2%,160,1,1)
+  G1%=gCREATE(0,0,Wg1%,160,1,1)
+  H%=5
+  TRAP MKDIR "LOC::M:\PAT"
+  IF CMD$(3)="O"
+    Opfil:(CMD$(2))
+  ELSEIF CMD$(3)="C"
+    Nufil:(CMD$(2))
+  ENDIF
+  IF EXIST("LOC::M:\APP\WARDRND.INI")
+    OPEN "LOC::M:\APP\WARDRND.INI",B,A$,B$,C$
+    Regown$=B.A$
+    Code$="Registered"
+    REM This used to be B.B$
+    CLOSE
+    IF Regchek%:(Regown$,Code$)
+      GIPRINT "Registered to "+Regown$+", "+Ver$
+    ELSE
+      GIPRINT "Invalid registration information!"
+      DELETE "LOC::M:\APP\WARDRND.INI"
+      PAUSE 32
+      Regown$=""
+      Code$=""
+      GIPRINT "WardRound unregistered copy. "+Ver$
+      About:
+    ENDIF
+  ELSE
+    Regown$=""
+    Code$=""
+    GIPRINT "WardRound unregistered copy. "+Ver$
+    About:
+  ENDIF
+  Setupw:
+  gFONT Ft%
+  gINFO Gi%()
+  Curw%=1
+  H%=1
+  Curp%=1
+  gUPDATE OFF
+  Pick$=""
+  Pick%=0
+  DO
+    Newlist:
+    gUSE G1%
+    lc1z%=(Curp%-1)/10
+    lc2z%=Curp%-lc1z%*10
+    gSTYLE 4
+    gAT 2+lc1z%*Tabwid%,14*lc2z%+15 REM
+    gGREY 1
+    gPRINTB Pick$,Tabwid%-2
+    gGREY 0
+    gSTYLE 0
+    LOCK OFF
+    H%=5
+    K%=Getk%:
+    gAT 2+lc1z%*Tabwid%,14*lc2z%+15
+    gGREY 1
+    gPRINTB "",Tabwid%-2
+    gGREY 0
+    Keyctrl:
+  UNTIL K%=120+512
+ENDP
+
+
+
+PROC Getk%:
+  LOCAL lc3z$(128)
+  GETEVENT Ge%()
+  IF Ge%(1) AND 1024
+    IF Ge%(1)=1028
+      lc3z$=GETCMD$
+      IF LEFT$(lc3z$,1)="X"
+        STOP
+      ELSEIF LEFT$(lc3z$,1)="O"
+        Opfil:(MID$(lc3z$,2,127))
+      ELSEIF LEFT$(lc3z$,1)="C"
+        Nufil:(MID$(lc3z$,2,127))
+      ENDIF
+    ELSE
+      H%=0
+    ENDIF
+  ENDIF
+  Km%=255 AND Ge%(2)
+  RETURN Ge%(1)
+ENDP
+
+
+
+PROC Newlist:
+REM This Procedure refreshes the ward
+
+  LOCAL lc4z%,lc5z%,dmyz1%,lc6z%,lc7z%
+  LOCAL lc8z%,lc9z%,dmyz2$(42),lc10z$(30)
+  lc4z%=POS
+  gUSE G1%
+  IF H% AND 4
+    gGREY 2
+    gCLS
+    gGREY 0
+  ENDIF
+  IF H% AND 1
+    IF H%<>3
+      Pick%=0
+      Pick$=""
+    ENDIF
+    IF Sw%>0
+      DIAMINIT Det%,"Diag & Hx","Meds & Allergies","Investigations","Comments"
+    ENDIF
+    lc5z%=1
+    DO
+      Wd%(lc5z%)=0
+      lc5z%=lc5z%+1
+    UNTIL lc5z%=21
+    IF Curw%<9
+      Itemise:(War$,",")
+      Foldlab$=I$(Curw%)
+      FIRST
+      DO
+        lc6z%=A.WAR%/30
+        lc7z%=A.WAR%-30*lc6z%
+        IF Curw%=lc6z% AND lc7z%<21 AND lc7z%
+          IF Wd%(lc7z%)<>0
+            GIPRINT "OVERLAP "+GEN$(Curp%,2)
+          ENDIF
+          Wd%(lc7z%)=POS
+        ENDIF
+        NEXT
+      UNTIL EOF
+    ELSEIF Curw%>8
+      FIRST
+      lc7z%=1
+      DO
+        lc6z%=A.WAR%/30
+        IF Curw%=lc6z%
+          Wd%(lc7z%)=POS
+          lc7z%=lc7z%+1
+        ENDIF
+        NEXT
+        IF lc7z%>20
+          GIPRINT "Buffer full! Delete or archive to free space"
+          BREAK
+        ENDIF
+      UNTIL EOF
+      IF Curw%=9
+        Foldlab$="DISCHARGES BUFFER"
+      ELSEIF Curw%=10
+        Foldlab$="ADMISSIONS BUFFER"
+      ENDIF
+    ENDIF
+    gAT 0,13
+    gXBORDER 0,0,Tabwid%*2,147
+    gAT 0,0
+    gXBORDER 0,1,Tabwid%*2,12
+    gFONT 5
+    gSTYLE 1
+    gAT 3,9
+    gPRINTB Foldlab$,Tabwid%*2-6
+    gFONT Ft%
+    gSTYLE 0
+    gAT Wg1%/2,15
+    gLINEBY 0,142
+    lc5z%=1
+    DO
+      lc8z%=(lc5z%-1)/10
+      lc9z%=lc5z%-lc8z%*10
+      IF Wd%(lc5z%)<>0
+        POSITION Wd%(lc5z%)
+        IF Det%=4 AND A.FFM$<>""
+          gSTYLE Usty%
+        ELSEIF Det%=3 AND A.RES$<>""
+          gSTYLE Usty%
+        ELSEIF Det%=2 AND A.MED$<>""
+          gSTYLE Usty%
+        ELSEIF Det%=1 AND A.DIAG$<>""
+          gSTYLE Usty%
+        ENDIF
+        gAT 3+lc8z%*Tabwid%,lc9z%*14+15
+        gPRINTB A.PAT$,Tabwid%-4
+        gSTYLE 0
+      ELSE
+        gAT 3+lc8z%*Tabwid%,lc9z%*14+15
+        gPRINTB "þ",Tabwid%-4
+      ENDIF
+      lc5z%=lc5z%+1
+    UNTIL lc5z%=21
+  ENDIF
+  gUSE G2%
+  gCLS
+  IF Wd%(Curp%)<>0
+    POSITION Wd%(Curp%)
+    gSTYLE 0
+    gFONT Ft3%
+    gINFO Gi%()
+    gAT 2,Gi%(5)+1
+    gPRINTB A.PAT$,Wg2%,2
+    gSTYLE 0
+    gMOVE 0,Gi%(3)+1
+    gPRINTB "   ID:  "+A.HNO$,Wg2%
+    gMOVE 0,Gi%(3)+1
+    IF A.DOB&>0
+      gPRINTB "   DoB: "+Dt$:(A.DOB&),Wg2%
+    ENDIF
+    gFONT 9
+    gINFO Gi%()
+    lc10z$=CHR$(4)+" Fields:"
+    IF A.DIAG$<>""
+      lc10z$=lc10z$+" D"
+    ENDIF
+    IF A.MED$<>""
+      lc10z$=lc10z$+" M"
+    ENDIF
+    IF A.RES$<>""
+      lc10z$=lc10z$+" I"
+    ENDIF
+    IF A.FFM$<>""
+      lc10z$=lc10z$+" C"
+    ENDIF
+    gSTYLE 1
+    gMOVE 0,Gi%(3)+3
+    gPRINTB "   "+lc10z$,Wg2%
+    gFONT Ft2%
+    gINFO Gi%()
+    IF Det%=1
+      gSTYLE 1
+      gMOVE 0,Gi%(3)+2
+      gPRINTB "-: DIAGNOSIS & HISTORY :-",Wg2%
+      Itemise:(A.DIAG$,"þ")
+    ELSEIF Det%=2
+      gSTYLE 1
+      gMOVE 0,Gi%(3)+2
+      gPRINTB "-: MEDICATIONS :-",Wg2%
+      Itemise:(A.MED$,"þ")
+    ELSEIF Det%=3
+      gSTYLE 1
+      gMOVE 0,Gi%(3)+2
+      gPRINTB "-: INVESTIGATIONS :-",Wg2%
+      Itemise:(A.RES$,"þ")
+    ELSEIF Det%=4
+      gSTYLE 1
+      gMOVE 0,Gi%(3)+2
+      gPRINTB "-: COMMENTS & TO-DO :-",Wg2%
+      Itemise:(A.FFM$,"þ")
+    ENDIF
+    lc5z%=1
+    WHILE I$(lc5z%)<>"" AND lc5z%<11
+      gSTYLE 0
+      gMOVE 0,Gi%(3)+1
+      gPRINTB I$(lc5z%),Wg2%
+      lc5z%=lc5z%+1
+    ENDWH
+  ENDIF
+  gUPDATE
+  H%=0
+ENDP
+
+
+
+PROC Keyctrl:
+  IF K%=290
+    IF Km% AND 4
+      Sw%=Sw%+1
+      IF Sw%>2
+        Sw%=0
+      ENDIF
+      Scrw%=480-32*Sw%
+      gUSE 1
+      gSETWIN 0,0,Scrw%,160
+      SCREEN 1,1
+      Setupw:
+      STATUSWIN ON, Sw%
+    ELSE
+      K%=Men1:
+    ENDIF
+  ELSEIF K%=9
+    IF Det%=1
+      K%=100+512
+    ELSEIF Det%=2
+      K%=109+512
+    ELSEIF Det%=3
+      K%=105+512
+    ELSEIF Det%=4
+      K%=99+512
+    ENDIF
+  ENDIF
+  IF K%=291
+    Help2:
+  ELSEIF K%=292
+    Det%=Det%+1
+    IF Det%>4
+      Det%=1
+    ENDIF
+    IF Det%=1
+      GIPRINT "Displaying Diagnosis & History"
+    ELSEIF Det%=2
+      GIPRINT "Displaying Medications"
+    ELSEIF Det%=3
+      GIPRINT "Displaying Investigations"
+    ELSEIF Det%=4
+      GIPRINT "Displaying Comments & To-Do"
+    ENDIF
+  ELSEIF K%>=49 AND K%<=57
+    Curw%=K%-49+1
+    H%=3
+  ELSEIF K%=48
+    Curw%=10
+    H%=3
+  ELSEIF K%=13
+    Dia1t$="Update Patient Details"
+    IF Wd%(Curp%)<>0
+      GIPRINT Dia1t$
+      Oldval:
+      IF Dia1:<>0
+        UPDATE
+        Blankval:
+      ENDIF
+    ELSE
+      Blankval:
+      Dia1t$="Enter new patient admission details"
+      GIPRINT Dia1t$
+      Adm&=DAYS(DAY,MONTH,YEAR)
+      IF Dia1:<>0
+        APPEND
+        Blankval:
+      ENDIF
+    ENDIF
+  ELSEIF K%=27
+    Setupw:
+  ELSEIF K%=43 OR K%=512+43 OR K%=ASC(" ")
+    IF Wd%(Curp%)<>0
+      POSITION Wd%(Curp%)
+      H%=0
+      Pick$=A.PAT$
+      Pick%=POS
+      GIPRINT "Picking up "+A.PAT$
+    ELSEIF Pick%=0
+      PRINT CHR$(7)
+      GIPRINT "No patient selected!"
+    ELSE
+      POSITION Pick%
+      Wd%(Curp%)=Pick%
+      H%=1
+      IF A.WAR%/30=9 AND Curw%<>9
+        GIPRINT "Readmitting "+A.PAT$+"..."
+        A.ADM&=DAYS(DAY,MONTH,YEAR)
+        A.DIS&=0
+      ELSE
+        GIPRINT "Dropping "+A.PAT$+"..."
+      ENDIF
+      A.WAR%=Curw%*30+Curp%
+      UPDATE
+    ENDIF
+  ELSEIF K%=8
+    Dischg:
+  ELSEIF K%=8192 OR K%=8193
+    H%=0
+  ELSEIF K%=257
+    Curp%=Curp%+1
+    H%=0
+    IF Curp%>20
+      Curp%=1
+    ENDIF
+  ELSEIF K%=256
+    Curp%=Curp%-1
+    H%=0
+    IF Curp%<1
+      Curp%=20
+    ENDIF
+  ELSEIF K%=258
+    IF Curp%>10
+      Curw%=Curw%+1
+      H%=3
+      IF Curw%>8
+        Curw%=1
+      ENDIF
+    ELSE
+      Curp%=Curp%+10
+      H%=0
+    ENDIF
+  ELSEIF K%=259
+    IF Curp%<11
+      Curw%=Curw%-1
+      H%=3
+      IF Curw%<1
+        Curw%=8
+      ENDIF
+    ELSE
+      Curp%=Curp%-10
+      H%=0
+    ENDIF
+  ELSEIF K%=97+512
+    Curw%=10
+    GIPRINT "Going to Admissions buffer"
+    H%=3
+  ELSEIF K%=99+512
+    IF Wd%(Curp%)
+      Comm:
+    ELSE
+      PRINT CHR$(7)
+      GIPRINT "No patient selected!"
+    ENDIF
+  ELSEIF K%=100+512
+    IF Wd%(Curp%)
+      Diag:
+    ELSE
+      PRINT CHR$(7)
+      GIPRINT "No patient selected!"
+    ENDIF
+  ELSEIF K%=101+512
+    Listdis:
+  ELSEIF K%=102+512
+    Findst:
+  ELSEIF K%=103+512
+    Findagn:
+  ELSEIF K%=104+512
+    Curw%=9
+    GIPRINT "Going to Discharges buffer"
+    H%=3
+  ELSEIF K%=105+512
+    IF Wd%(Curp%)
+      Resul:
+    ELSE
+      PRINT CHR$(7)
+      GIPRINT "No patient selected!"
+    ENDIF
+  ELSEIF K%=106+512
+    Wardch:
+    H%=3
+  ELSEIF K%=107+512
+    Dia1t$="Edit default patient"
+    GIPRINT Dia1t$
+    FIRST
+    WHILE A.WAR%<>-2 AND NOT EOF
+      NEXT
+    ENDWH
+    Oldval:
+    IF Dia1:<>0.0
+      A.WAR%=-2
+      A.DIAG$=""
+      A.ADR$=""
+      A.GP$=""
+      A.ADM&=0
+      A.MED$=""
+      A.RES$=""
+      A.FFM$=""
+      IF EOF
+        APPEND
+      ELSE
+        UPDATE
+      ENDIF
+      Blankval:
+    ENDIF
+  ELSEIF K%=108+512
+    Gplet:
+  ELSEIF K%=109+512
+    IF Wd%(Curp%)
+      Meds:
+    ELSE
+      PRINT CHR$(7)
+      GIPRINT "No patient selected!"
+    ENDIF
+  ELSEIF K%=110+512
+    Newfile:
+  ELSEIF K%=111+512
+    Openfile:
+  ELSEIF K%=112+512
+    Prout:
+  ELSEIF K%=113+512
+    Cnwred:
+  ELSEIF K%=114+512
+    Regwr:
+  ELSEIF K%=115+512
+    Ptsum:
+  ELSEIF K%=116+512
+    H%=3
+    Opfilb:
+  ELSEIF K%=119+512
+    About:
+  ELSEIF K%=122+512
+    Fontz:
+  ELSE
+    H%=0
+  ENDIF
+ENDP
+
+
+
+PROC Fontz:
+  LOCAL lc11z%,lc12z%,lc13z%,lc14z%,lc16z%
+  LOCAL lc15z&
+  lc11z%=Ft%-3
+  lc12z%=Ft2%-3
+  lc13z%=Ft3%-3
+  lc14z%=Ft4%-3
+  lc15z&=Wg1%
+  IF Usty%=32
+    lc16z%=2
+  ELSEIF Usty%=1
+    lc16z%=3
+  ELSEIF Usty%=2
+    lc16z%=4
+  ELSE
+    lc16z%=1
+  ENDIF
+  Ffm$="Mono 8x8,Roman 8pt,Roman 11pt,Roman 13pt,Roman 16pt,Swiss 8pt,Swiss 11pt,Swiss 13pt,Swiss 16pt,Mono 6x6"
+  dINIT "Select Fonts & Display options"
+  dCHOICE lc16z%,"""Active"" Style:","Normal,Italic,Bold,Underlined"
+  dCHOICE lc11z%,"Ward font:",Ffm$
+  dCHOICE lc13z%,"Current patient:",Ffm$
+  dCHOICE lc12z%,"Diamond-field:",Ffm$
+  dCHOICE lc14z%,"Active list:",Ffm$
+  dLONG lc15z&,"Width of Ward Window",100,400
+  LOCK ON
+  IF DIALOG=0
+    RETURN
+  ENDIF
+  LOCK OFF
+  Ft%=lc11z%+3
+  Ft2%=lc12z%+3
+  Ft3%=lc13z%+3
+  Ft4%=lc14z%+3
+  IF lc16z%=2
+    Usty%=32
+  ELSEIF lc16z%=3
+    Usty%=1
+  ELSEIF lc16z%=4
+    Usty%=2
+  ELSE
+    Usty%=0
+  ENDIF
+  Wg1%=lc15z&
+  Tabwid%=Wg1%/2
+  Ffm$=""
+  Ffm$=Ffm$+(CHR$(Ft%+32))+(CHR$(Ft2%+32))+(CHR$(Ft3%+32))+(CHR$(Ft4%+32))
+  Ffm$=Ffm$+(CHR$(32+Tabwid%))+(CHR$(32+Usty%))
+  FIRST
+  WHILE NOT EOF
+    IF A.WAR%=-1
+      A.FFM$=Ffm$
+      UPDATE
+      BREAK
+    ENDIF
+    NEXT
+  ENDWH
+  Setupw:
+ENDP
+
+PROC Wardch:
+  LOCAL lc17z%
+  lc17z%=Curw%
+  dINIT "Jump to Ward"
+  dCHOICE lc17z%,"Choose Ward:",War$
+  LOCK ON
+  DIALOG
+  LOCK OFF
+  Curw%=lc17z%
+ENDP
+
+PROC Findst:
+  LOCAL lc18z%
+L0::
+  dINIT "Enter Search String"
+  dEDIT Find$,"Find:"
+  LOCK ON
+  lc18z%=DIALOG
+  LOCK OFF
+  IF lc18z%=0
+    RETURN
+  ENDIF
+  IF Find$=""
+    GOTO L0::
+  ENDIF
+  lc18z%=0
+  FIRST
+  GIPRINT "Finding from start of file..."
+  DO
+    lc18z%=FIND("*"+Find$+"*")
+    IF lc18z%=0
+      BREAK
+    ENDIF
+    IF A.WAR%<1
+      NEXT
+    ENDIF
+  UNTIL A.WAR%>0
+  IF lc18z%=0
+    GIPRINT "None found"
+  ELSE
+    Curw%=A.WAR%/30
+    Curp%=A.WAR%-30*Curw%
+    H%=3
+  ENDIF
+ENDP
+
+PROC Findagn:
+  LOCAL dmyz1%,lc19z%
+  IF Find$=""
+    GIPRINT "Nothing to find"
+    RETURN
+  ENDIF
+  GIPRINT "Searching for """+Find$+""""
+  DO
+    NEXT
+    lc19z%=FIND("*"+Find$+"*")
+  UNTIL A.WAR%>0 OR lc19z%=0
+  IF lc19z%=0
+    GIPRINT "No more found"
+  ELSE
+    Curw%=A.WAR%/30
+    Curp%=A.WAR%-30*Curw%
+    H%=3
+  ENDIF
+ENDP
+
+PROC Resul:
+  LOCAL lc20z$(255)
+  lc20z$=A.RES$
+  lc20z$=Edload$:(lc20z$,"Investigations",A.PAT$+"  "+A.HNO$,"þ")
+  A.RES$=lc20z$
+  UPDATE
+  Det%=3
+ENDP
+
+PROC Meds:
+  LOCAL lc21z$(255)
+  lc21z$=A.MED$
+  lc21z$=Edload$:(lc21z$,"Medications",A.PAT$+"  "+A.HNO$,"þ")
+  A.MED$=lc21z$
+  UPDATE
+  Det%=2
+ENDP
+
+PROC Diag:
+  LOCAL lc22z$(255)
+  lc22z$=A.DIAG$
+  lc22z$=Edload$:(lc22z$,"Diagnosis & History",A.PAT$+"  "+A.HNO$,"þ")
+  A.DIAG$=lc22z$
+  UPDATE
+  Det%=1
+ENDP
+
+PROC Comm:
+  LOCAL lc23z$(255)
+  lc23z$=A.FFM$
+  lc23z$=Edload$:(lc23z$,"Comments & To-Do",A.PAT$+"  "+A.HNO$,"þ")
+  A.FFM$=lc23z$
+  UPDATE
+  Det%=4
+ENDP
+
+PROC Prout:
+  LOCAL lc24z$(128),lc25z%,dmyz1$(2),lc26z%,lc28z%
+  LOCAL lc27z%
+  IF Regchek%:(Regown$,Code$)<>-1
+    GIPRINT "You must register to use this feature"
+    RETURN
+  ENDIF
+  lc24z$="LOC::M:\WRD\WARD_PRN.WRD"
+  dINIT "Output Printout of Patient Data"
+  dFILE lc24z$,"Output to WORD file:",17
+  dTEXT "","Use WORD editor to make changes, then print."
+  LOCK ON
+  IF DIALOG
+    LOCK OFF
+    TRAP LOPEN lc24z$
+    lc25z%=ERR
+    IF lc25z%=0
+      GIPRINT "Outputting to "+lc24z$
+      lc26z%=1
+      Itemise:(War$,",")
+      BUSY "Busy...",1,1
+      DO
+        LPRINT "++++++++ WARD:",I$(lc26z%),"++++++++"
+        B%=1
+        DO
+          Wd%(B%)=0
+          B%=B%+1
+        UNTIL B%>20
+        FIRST
+        DO
+          lc27z%=A.WAR%/30
+          lc28z%=A.WAR%-30*lc27z%
+          IF lc26z%=lc27z%
+            Wd%(lc28z%)=POS
+          ENDIF
+          NEXT
+        UNTIL EOF
+        B%=1
+        DO
+          IF Wd%(B%)>0
+            POSITION Wd%(B%)
+            LPRINT "******  ",A.PAT$;", DoB:",Dt$:(A.DOB&),"ID:",A.HNO$+CHR$(10);
+            IF A.DIAG$<>""
+              LPRINT "<D&H>:",A.DIAG$+CHR$(10);
+            ENDIF
+            IF A.MED$<>""
+              LPRINT "<MED>:",A.MED$+CHR$(10);
+            ENDIF
+            IF A.RES$<>""
+              LPRINT "<RES>:",A.RES$+CHR$(10);
+            ENDIF
+            IF A.FFM$<>""
+              LPRINT "<C&T>:",A.FFM$+CHR$(10);
+            ENDIF
+            LPRINT "--------"
+          ENDIF
+          B%=B%+1
+        UNTIL B%>20
+        lc26z%=lc26z%+1
+      UNTIL lc26z%>8
+      LCLOSE
+      BUSY OFF
+    ELSE
+      LOCK OFF
+      PRINT CHR$(7)
+      GIPRINT ERR$(lc25z%)
+    ENDIF
+  ENDIF
+ENDP
+
+PROC Listdis:
+  LOCAL dmyz1%,lc33z%,lc32z%,lc31z%,lc30z%
+  LOCAL lc34z%,lc35z%,lc36z%,lc29z%
+  IF Regchek%:(Regown$,Code$)=-1
+    lc29z%=240
+    GIPRINT "Displaying Active List"
+  ELSE
+    lc29z%=8
+    GIPRINT "You can display more entries if you register!"
+  ENDIF
+  gUSE G1%
+  gSETWIN 0,0,Scrw%,160
+  gFONT Ft4%
+  gINFO Gi%()
+  lc30z%=0
+  lc31z%=(148-Gi%(5))/(Gi%(3)+2)+1
+L170::
+  lc32z%=1
+  Diag$=""
+  Res$=""
+  gCLS
+  FIRST
+  WHILE NOT EOF
+    IF Det%=1
+      Ffm$=A.DIAG$
+    ELSEIF Det%=2
+      Ffm$=A.MED$
+    ELSEIF Det%=3
+      Ffm$=A.RES$
+    ELSEIF Det%=4
+      Ffm$=A.FFM$
+    ENDIF
+    IF Ffm$<>"" AND A.WAR%>0
+      lc33z%=POS/200
+      Diag$=Diag$+(CHR$(lc33z%+32))
+      Res$=Res$+(CHR$(32+POS-lc33z%*200))
+    ENDIF
+    NEXT
+    IF LEN(Res$)>lc29z%
+      IF Regown$<>""
+        GIPRINT "Only allowed "+GEN$(lc29z%,3)+" entries in unregistered version"
+      ELSE
+        GIPRINT "Active list overflow! Only "+GEN$(lc29z%,3)+" entries included"
+      ENDIF
+      BREAK
+    ENDIF
+  ENDWH
+  IF Res$=""
+    GIPRINT "No active entries"
+  ELSE
+L545::
+    gUPDATE OFF
+    gCLS
+    lc32z%=1
+    IF lc34z%<1
+      lc34z%=1
+    ELSEIF lc34z%>LEN(Res$)
+      lc34z%=LEN(Res$)
+    ENDIF
+    gAT 2,9
+    gFONT 9
+    Med$="Active entries: "+GEN$(LEN(Res$),3)+"      Page "+(GEN$(lc30z%+1,2))+" of "+GEN$((LEN(Res$)+lc31z%-1)/lc31z%,2)
+    gXPRINT Med$,2
+    gFONT Ft4%
+    gAT 0,Gi%(5)+12
+    DO
+      lc35z%=lc32z%+lc31z%*lc30z%
+      Wd%(lc32z%)=200*(ASC(MID$(Diag$,lc35z%,1))-32)+ASC(MID$(Res$,lc35z%,1))-32
+      POSITION Wd%(lc32z%)
+      IF Det%=1
+        Ffm$=A.DIAG$
+      ELSEIF Det%=2
+        Ffm$=A.MED$
+      ELSEIF Det%=3
+        Ffm$=A.RES$
+      ELSEIF Det%=4
+        Ffm$=A.FFM$
+      ENDIF
+      gSTYLE Usty%
+      gPRINTB A.PAT$,Tabwid%-2
+      gSTYLE 0
+      gMOVE Tabwid%,0
+      gPRINTB Ffm$,Scrw%-Tabwid%
+      gMOVE -Tabwid%,Gi%(3)+2
+      lc32z%=lc32z%+1
+    UNTIL lc32z%>lc31z% OR lc35z%>=LEN(Res$)
+    gUPDATE
+    DO
+      IF lc34z%<1
+        lc34z%=1
+      ELSEIF lc34z%>LEN(Res$)
+        lc34z%=LEN(Res$)
+      ENDIF
+      lc32z%=lc34z%-lc30z%*lc31z%
+      IF lc32z%>lc31z%
+        lc30z%=(lc34z%-1)/lc31z%
+        GOTO L545::
+      ENDIF
+      IF lc32z%<1
+        lc30z%=(lc34z%-1)/lc31z%
+        GOTO L545::
+      ENDIF
+      gAT 0,Gi%(5)+12+(lc32z%-1)*(Gi%(3)+2)
+      gGREY 1
+      gSTYLE 4
+      gPRINTB "",Tabwid%-2
+      K%=Getk%:
+      gSTYLE 0
+      gPRINTB "",Tabwid%-2
+      gGREY 2
+      IF K%=256
+        lc34z%=lc34z%-1
+        CONTINUE
+      ENDIF
+      IF K%=257
+        lc34z%=lc34z%+1
+        CONTINUE
+      ENDIF
+      IF K%=258
+        lc34z%=lc34z%+lc31z%
+        CONTINUE
+      ENDIF
+      IF K%=259
+        lc34z%=lc34z%-lc31z%
+        CONTINUE
+      ENDIF
+      IF K%=261
+        lc34z%=LEN(Res$)
+        CONTINUE
+      ENDIF
+      IF K%=260
+        lc34z%=1
+        CONTINUE
+      ENDIF
+      IF K%=13 AND Wd%(lc32z%)>0
+        POSITION Wd%(lc32z%)
+        Curw%=A.WAR%/30
+        Curp%=A.WAR%-Curw%*30
+        BREAK
+        CONTINUE
+      ENDIF
+      IF K%=8 AND Wd%(lc32z%)>0
+        dINIT
+        dTEXT "","Clear active field?",258
+        dBUTTONS "Yes",%y,"No",%n
+        lc36z%=DIALOG
+        IF lc36z%=121
+          POSITION Wd%(lc32z%)
+          IF Det%=1
+            A.DIAG$=""
+          ELSEIF Det%=2
+            A.MED$=""
+          ELSEIF Det%=3
+            A.RES$=""
+          ELSEIF Det%=4
+            A.FFM$=""
+          ENDIF
+          UPDATE
+        ENDIF
+        FIRST
+        GOTO L170::
+        CONTINUE
+      ENDIF
+      IF K%=291
+        dINIT "Active list view"
+        dTEXT "Up:","Previous entry"
+        dTEXT "Down:","Next entry"
+        dTEXT "Left:","Previous page"
+        dTEXT "Right:","Next page"
+        dTEXT "Del:","Clear active field"
+        dTEXT "Esc:","Return to wards"
+        dTEXT "Enter:","Locate entry"
+        LOCK ON
+        DIALOG
+        LOCK OFF
+        CONTINUE
+      ENDIF
+      IF K%=27
+        BREAK
+        CONTINUE
+      ENDIF
+      GIPRINT "Press Esc to return to Wards, Help for help"
+    UNTIL K%=27
+  ENDIF
+  Setupw:
+ENDP
+
+PROC Setupw:
+  Wg1%=Tabwid%*2
+  Wg2%=Scrw%-Wg1%-2
+  gUSE G1%
+  gSETWIN 0,0,Wg1%,160
+  gUSE G2%
+  gSETWIN Wg1%+2,0,Wg2%,160
+  H%=7
+ENDP
+
+PROC About:
+  dINIT "WARDROUND by Dr Shane McKee"
+  dTEXT "","Psion 3a/c Patient Management",2
+  dTEXT "",Ver$,2
+  IF Regown$<>""
+    dTEXT "","Registered to "+Regown$,2
+    dTEXT "","Thankyou for registering.",2
+  ELSE
+    dTEXT "","Unregistered version!",2
+    dTEXT "","Please register this program.",2
+  ENDIF
+  dTEXT "","Info: shane@mckee.dnet.co.uk",2
+  dTEXT "","or read the WARDRND.TXT file",2
+  LOCK ON
+  DIALOG
+  LOCK OFF
+ENDP
+
+PROC Gplet:
+  LOCAL lc37z$(128),lc38z%,lc39z%
+  lc37z$="LOC::M:\WRD\GPLTR.WRD"
+  IF Wd%(Curp%)<1
+    GIPRINT "No patient selected"
+    RETURN
+  ENDIF
+  dINIT "Output GP letter based on Patient data"
+  dFILE lc37z$,"Output to WORD file:",17
+  dTEXT "","Use WORD editor to make changes."
+  LOCK ON
+  IF DIALOG
+    GIPRINT "Outputting GP letter to "+lc37z$
+    TRAP LOPEN lc37z$
+    lc38z%=ERR
+    IF lc38z%=0
+      LPRINT Dt$:(DAYS(DAY,MONTH,YEAR))
+      LPRINT "Dear Dr,"+CHR$(10);
+      Itemise:(A.PAT$,",")
+      IF Regchek%:(Regown$,Code$)<>-1
+        LPRINT "I have not yet registered WardRound, the excellent program which generated this letter. ";"I should register this wonderful program, because it's only œ15, and it's *so* useful! "
+        LPRINT "Anyway, about your patient..."
+      ENDIF
+      LPRINT "Re: ";I$(2),I$(1);", DoB:",Dt$:(A.DOB&);", Hosp No:",A.HNO$,":"
+      Itemise:(Con$,",")
+      LPRINT "Your patient was admitted on "+Dt$:(A.ADM&)+" to our hospital under the care of "+I$(A.CON%)+". "
+      LPRINT "Admission type: ";
+      Itemise:(Adt$,",")
+      LPRINT I$(A.ADT%)
+      IF A.DIAG$<>""
+        lc39z%=1
+        Itemise:(A.DIAG$,"þ")
+        LPRINT "Problem list:"+CHR$(10);
+        WHILE I$(lc39z%)<>""
+          LPRINT "   ",lc39z%,": ",I$(lc39z%)+CHR$(10);
+          lc39z%=lc39z%+1
+        ENDWH
+      ENDIF
+      IF A.MED$<>""
+        lc39z%=1
+        Itemise:(A.MED$,"þ")
+        LPRINT "Medications & Allergies:"+CHR$(10);
+        WHILE I$(lc39z%)<>""
+          LPRINT "   ",lc39z%,": ",I$(lc39z%)+CHR$(10);
+          lc39z%=lc39z%+1
+        ENDWH
+      ENDIF
+      IF Regown$<>""
+        IF A.RES$<>""
+          lc39z%=1
+          Itemise:(A.RES$,"þ")
+          LPRINT "Investigations & Results:"+CHR$(10);
+          WHILE I$(lc39z%)<>""
+            LPRINT "   ",lc39z%,": ",I$(lc39z%)+CHR$(10);
+            lc39z%=lc39z%+1
+          ENDWH
+        ENDIF
+        IF A.FFM$<>""
+          lc39z%=1
+          Itemise:(A.FFM$,"þ")
+          LPRINT "Management plan:"+CHR$(10);
+          WHILE I$(lc39z%)<>""
+            LPRINT "   ",lc39z%,": ",I$(lc39z%)+CHR$(10);
+            lc39z%=lc39z%+1
+          ENDWH
+        ENDIF
+      ELSE
+        LPRINT "If I register WardRound, I'll also be able to tell you about the patient's results and management plan!"
+      ENDIF
+      IF A.DIS&<>0
+        LPRINT "Date of discharge: "+Dt$:(A.DIS&)+"."
+      ENDIF
+      LPRINT
+      LPRINT "Yours sincerely,"
+      LPRINT
+      LPRINT Regown$
+      LCLOSE
+      LOCK OFF
+      RETURN
+    ELSE
+      PRINT CHR$(7)
+      GIPRINT ERR$(lc38z%)
+    ENDIF
+    LOCK OFF
+  ENDIF
+ENDP
+
+PROC Helppr:
+  dINIT
+  dTEXT "Enter:","Add/Update entry"
+  dTEXT "+","Pick up/drop entry"
+  dTEXT CHR$(4),"Cycle through DMIC fields"
+  dTEXT "Tab:","Edit active field"
+  dTEXT "Menu:","Other options"
+  LOCK ON
+  DIALOG
+  LOCK OFF
+ENDP
+
+PROC Help2:
+  LOCAL lc44z%,lc43z%(65),lc42z$(130),lc40z&,lc41z&
+  lc40z&=1
+  lc41z&=1
+  lc42z$="LOC::M:\opd\wardrnd.rsc"
+  IF NOT EXIST(lc42z$)
+    Helppr:
+  ELSE
+    POKE$ ADDR(lc43z%()),"#"+lc42z$
+    lc44z%=PEEKW(56)
+    SEND(lc44z%,27,lc43z%(2))
+    SEND(lc44z%,26,#(lc40z&),#(lc41z&))
+  ENDIF
+ENDP
+
+PROC Cnwred:
+  LOCAL dmyz1$(215),lc46z$(255),lc45z%,lc47z$(11)
+  dINIT "Ward / Consultant / Admission Type"
+  dCHOICE lc45z%,"Change:","Ward,Consultant,Admission type"
+  LOCK ON
+  IF DIALOG=0
+    LOCK OFF
+    RETURN
+  ENDIF
+  LOCK OFF
+  IF lc45z%=1
+    lc46z$=War$
+    lc47z$="Wards"
+  ELSEIF lc45z%=2
+    lc46z$=Con$
+    lc47z$="Consultants"
+  ELSEIF lc45z%=3
+    lc46z$=Adt$
+    lc47z$="Adm. Types"
+  ENDIF
+  lc46z$=Edload$:(lc46z$,lc47z$,"Alter General Hospital Options",",")
+  IF lc46z$=""
+    GIPRINT "Error in editing"
+    RETURN
+  ENDIF
+  IF lc45z%=1
+    War$=lc46z$
+  ELSEIF lc45z%=2
+    Con$=lc46z$
+  ELSEIF lc45z%=3
+    Adt$=lc46z$
+  ENDIF
+  FIRST
+  GIPRINT "Updating setup"
+  WHILE NOT EOF
+    IF A.WAR%=-1
+      A.MED$=Adt$
+      A.GP$=Con$
+      A.ADR$=War$
+      UPDATE
+      BREAK
+    ENDIF
+    NEXT
+  ENDWH
+ENDP
+
+PROC Edload$:(pr1z$,pr2z$,pr3z$,pr4z$)
+  LOCAL lc49z%,lc50z$(10,30),lc48z$(255)
+  GIPRINT "WARNING: Blank fields will be ""concertina""ed"
+  lc48z$=pr1z$
+  IF Regchek%:(Regown$,Code$)<>-1
+    Regown$=""
+    Code$=""
+  ENDIF
+  Itemise:(pr1z$,pr4z$)
+  lc49z%=1
+  DO
+    lc50z$(lc49z%)=I$(lc49z%)
+    lc49z%=lc49z%+1
+  UNTIL lc49z%>10
+L139::
+  dINIT pr3z$+": "+pr2z$
+  dEDIT lc50z$(),""
+  dEDIT lc50z$(2),""
+  dEDIT lc50z$(3),""
+  dEDIT lc50z$(4),""
+  dEDIT lc50z$(5),""
+  dEDIT lc50z$(6),""
+  dEDIT lc50z$(7),""
+  dEDIT lc50z$(8),""
+  LOCK ON
+  IF DIALOG=0
+    LOCK OFF
+    RETURN pr1z$
+  ENDIF
+  LOCK OFF
+  lc49z%=1
+  DO
+    IF LOC(lc50z$(lc49z%),pr4z$)<>0
+      PRINT CHR$(7)
+      GIPRINT "You mustn't include """+pr4z$+""""
+      GOTO L139::
+    ENDIF
+    lc49z%=lc49z%+1
+  UNTIL lc49z%>8
+  lc49z%=1
+  lc48z$=""
+  DO
+    IF lc50z$(lc49z%)<>""
+      lc48z$=lc48z$+lc50z$(lc49z%)+pr4z$
+    ENDIF
+    lc49z%=lc49z%+1
+  UNTIL lc49z%>10
+  IF lc48z$<>""
+    lc48z$=LEFT$(lc48z$,LEN(lc48z$)-1)
+  ENDIF
+  RETURN lc48z$
+ENDP
+
+PROC Men1:
+  mINIT
+  mCARD "File","Open",%o,"New",%n,"About",%w,"Exit",%x
+  mCARD "Patient","Diagnosis & Hx",%d,"Medications",%m,"Investigations",%i,"Comments & To-Do",%c,"GP Letter",%l,"Transfer",%t,"Summary",%s
+  mCARD "Hospital","Active list",%e,"Print Handover to file",%p,"Hospital setup",%q,"Edit default patient",%k
+  mCARD "Navigate","Jump to Ward",%j,"Go to Admissions",%a,"Go to Discharges",%h,"Find",%f,"Find Again",%g,"Pick up/drop patient",%+
+  mCARD "Tools","Display Options",%z,"Register",%r
+  LOCK ON
+  K%=MENU
+  K%=K%+512
+  LOCK OFF
+  RETURN K%
+ENDP
+
+PROC Ptsum:
+  LOCAL lc51z%,lc52z%
+  IF Wd%(Curp%)=0
+    GIPRINT "No patient selected!"
+    RETURN
+  ENDIF
+  lc51z%=Scrw%/3-1
+  Ffm$=""
+  gUSE G1%
+  gSETWIN 0,0,Scrw%,160
+  gCLS
+  gFONT Ft3%
+  gINFO Gi%()
+  gAT 0,Gi%(5)
+  gSTYLE Usty%
+  gPRINTB A.PAT$,lc51z%
+  gSTYLE 0
+  gMOVE 0,Gi%(3)
+  gPRINTB "  ID: "+A.HNO$,lc51z%
+  gMOVE 0,Gi%(3)
+  gPRINTB "  DoB: "+Dt$:(A.DOB&),lc51z%
+  gMOVE 0,Gi%(3)+4
+  gPRINTB "Adm: "+Dt$:(A.ADM&),lc51z%
+  Itemise:(Adt$,",")
+  gMOVE 0,Gi%(3)
+  gPRINTB "Type: "+I$(A.ADT%),lc51z%
+  Itemise:(Con$,",")
+  gMOVE 0,Gi%(3)
+  gPRINTB "Cons: "+I$(A.CON%),lc51z%
+  Itemise:(War$,",")
+  gMOVE 0,Gi%(3)
+  gPRINTB "Ward: "+I$(A.WAR%/30),lc51z%
+  IF A.DIS&<>0
+    gPRINTB "Dis: "+Dt$:(A.DIS&),lc51z%
+    gMOVE 0,Gi%(3)+3
+    IF A.DIS&>=A.ADM&
+      gPRINTB "Stay: "+(GEN$(A.DIS&-A.ADM&,5))+" days",lc51z%
+    ELSE
+      gPRINTB "Check dates!",lc51z%
+    ENDIF
+  ELSE
+    gMOVE 0,Gi%(3)+3
+    gPRINTB "Stay: "+(GEN$(DAYS(DAY,MONTH,YEAR)-A.ADM&,5))+" days",lc51z%
+  ENDIF
+  gFONT 9
+  gINFO Gi%()
+  gAT lc51z%+2,Gi%(5)
+  gSTYLE 1
+  gPRINTB "Diagnosis & History",lc51z%
+  gMOVE 0,Gi%(3)
+  gSTYLE 0
+  Itemise:(A.DIAG$,"þ")
+  lc52z%=1
+  DO
+    gPRINTB I$(lc52z%),lc51z%
+    gMOVE 0,Gi%(3)
+    lc52z%=lc52z%+1
+  UNTIL lc52z%>8
+  gAT lc51z%*2+4,Gi%(5)
+  gSTYLE 1
+  gPRINTB "Investigations",lc51z%
+  gMOVE 0,Gi%(3)
+  gSTYLE 0
+  Itemise:(A.RES$,"þ")
+  lc52z%=1
+  DO
+    gPRINTB I$(lc52z%),lc51z%
+    gMOVE 0,Gi%(3)
+    lc52z%=lc52z%+1
+  UNTIL lc52z%>8
+  gAT lc51z%+2,80+Gi%(5)
+  gSTYLE 1
+  gPRINTB "Medications",lc51z%
+  gMOVE 0,Gi%(3)
+  gSTYLE 0
+  Itemise:(A.MED$,"þ")
+  lc52z%=1
+  DO
+    gPRINTB I$(lc52z%),lc51z%
+    gMOVE 0,Gi%(3)
+    lc52z%=lc52z%+1
+  UNTIL lc52z%>8
+  gAT lc51z%*2+4,80+Gi%(5)
+  gSTYLE 1
+  gPRINTB "Comments & To Do",lc51z%
+  gMOVE 0,Gi%(3)
+  gSTYLE 0
+  Itemise:(A.FFM$,"þ")
+  lc52z%=1
+  DO
+    gPRINTB I$(lc52z%),lc51z%
+    gMOVE 0,Gi%(3)
+    lc52z%=lc52z%+1
+  UNTIL lc52z%>8
+  GIPRINT "Press any key"
+  Getk%:
+  Setupw:
+ENDP
+
+PROC Dia1:
+  LOCAL lc53z%,dmyz1$(2)
+L0::
+  dINIT Dia1t$
+  dEDIT Pat$,"Name:",15
+  dDATE Dob&,"Birth date:",0,DAYS(DAY,MONTH,YEAR)
+  dEDIT Hno$,"Unit No:"
+  dDATE Adm&,"Admitted:",0,DAYS(DAY,MONTH,YEAR)
+  dCHOICE Adt%,"Adm Type:",Adt$
+  dCHOICE Con%,"Consultant:",Con$
+  LOCK ON
+  lc53z%=DIALOG
+  LOCK OFF
+  IF lc53z%
+    IF Pat$=""
+      PRINT CHR$(7)
+      GIPRINT "Can't enter a blank patient name!"
+      GOTO L0::
+    ENDIF
+    War%=Curw%*30+Curp%
+    Newval:
+  ENDIF
+  RETURN lc53z%
+ENDP
+
+PROC Newfile:
+  LOCAL lc54z$(128)
+  lc54z$="\PAT\*.pat"
+  dINIT
+  dTEXT "","Create New Patient File",258
+  dFILE lc54z$,"Filename:",9
+  LOCK ON
+  IF DIALOG=0
+    LOCK OFF
+    RETURN
+  ENDIF
+  LOCK OFF
+  Nufil:(lc54z$)
+ENDP
+
+PROC Nufil:(pr5z$)
+  TRAP CLOSE
+  TRAP CREATE pr5z$,A,PAT$,HNO$,DOB&,ADR$,GP$,ADM&,WAR%,CON%,ADT%,DIS&,DIAG$,MED$,RES$,FFM$
+  IF NOT ERR
+    A.WAR%=-1
+    War$="Ward1,Ward2,Ward3,Ward4,Ward5,Ward6,Ward7,Other"
+    Con$="Cons1,Cons2,Cons3,Cons4,Cons5,Cons6,Cons7,Other"
+    Adt$="Emergency,Elective,Outpatients,Ward Attender,Daycase,Other"
+    A.ADR$=War$
+    A.GP$=Con$
+    A.MED$=Adt$
+    APPEND
+    A.PAT$="Bloggs, Joe"
+    A.HNO$="CH "
+    A.WAR%=-2
+    A.DOB&=0
+    A.CON%=1
+    A.ADM&=DAYS(DAY,MONTH,YEAR)
+    A.HNO$=""
+    A.PAT$="<Bloggs, Joe>"
+    A.ADR$=""
+    A.GP$=""
+    A.DIAG$=""
+    A.ADT%=1
+    A.MED$=""
+    A.RES$=""
+    A.FFM$=""
+    APPEND
+    SETNAME pr5z$
+    Setupw:
+  ELSE
+    PRINT CHR$(7)
+    GIPRINT "Unable to create file!"
+    Openfile:
+  ENDIF
+ENDP
+
+PROC Openfile:
+  LOCAL lc55z$(128),lc56z%
+  lc55z$="\PAT\Patients.pat"
+  dINIT "WARDROUND by Dr Shane McKee"
+  dTEXT "","Open Patient Data File",258
+  dFILE lc55z$,"File:",0
+  LOCK ON
+  lc56z%=DIALOG
+  LOCK OFF
+  IF lc56z%
+    Opfil:(lc55z$)
+  ENDIF
+ENDP
+
+PROC Opfil:(pr6z$)
+  TRAP CLOSE
+  OPEN pr6z$,A,PAT$,HNO$,DOB&,ADR$,GP$,ADM&,WAR%,CON%,ADT%,DIS&,DIAG$,MED$,RES$,FFM$
+  Flg%=1
+  FIRST
+  WHILE NOT EOF
+    IF A.WAR%=-1
+      Adt$=A.MED$
+      Con$=A.GP$
+      War$=A.ADR$
+      IF A.FFM$<>""
+        Ft%=ASC(MID$(A.FFM$,1,1))-32
+        Ft2%=ASC(MID$(A.FFM$,2,1))-32
+        Ft3%=ASC(MID$(A.FFM$,3,1))-32
+        Ft4%=ASC(MID$(A.FFM$,4,1))-32
+        Tabwid%=ASC(MID$(A.FFM$,5,1))-32
+        Usty%=ASC(MID$(A.FFM$,6,1))-32
+      ENDIF
+      BREAK
+    ENDIF
+    NEXT
+  ENDWH
+  IF EOF
+    A.WAR%=-1
+    War$="Ward1,Ward2,Ward3,Ward4,Ward5,Ward6,Ward7,Other"
+    Con$="Cons1,Cons2,Cons3,Cons4,Cons5,Cons6,Cons7,Other"
+    Adt$="Emergency,Elective,Outpatients,Ward Attender,Daycase,Other"
+    A.ADR$=War$
+    A.GP$=Con$
+    A.MED$=Adt$
+    APPEND
+  ENDIF
+  Setupw:
+  SETNAME pr6z$
+ENDP
+
+PROC Opfilb:
+  LOCAL lc57z%
+  IF Regchek%:(Regown$,Code$)<>-1
+    GIPRINT "You must register to use this feature"
+    RETURN
+  ENDIF
+  IF Wd%(Curp%)=0
+    GIPRINT "No patient selected!"
+    RETURN
+  ENDIF
+  dINIT "Transfer "+A.PAT$+" to another file"
+  dFILE Archfil$,"File:",0
+  dTEXT "","Delete from this file?",258
+  dBUTTONS "Yes",%y,"No",%n
+  LOCK ON
+  lc57z%=DIALOG
+  LOCK OFF
+  IF lc57z%=0
+    RETURN
+  ENDIF
+  TRAP OPEN Archfil$,B,PAT$,HNO$,DOB&,ADR$,GP$,ADM&,WAR%,CON%,ADT%,DIS&,DIAG$,MED$,RES$,FFM$
+  IF ERR
+    PRINT CHR$(7)
+    GIPRINT ERR$(ERR)
+    RETURN
+  ENDIF
+  Oldval:
+  B.PAT$=Pat$
+  B.HNO$=Hno$
+  B.GP$=Gp$
+  B.DIAG$=Diag$
+  B.WAR%=301
+  B.CON%=Con%
+  B.DOB&=Dob&
+  B.ADM&=Adm&
+  B.DIS&=Dis&
+  B.ADR$=Adr$
+  B.ADT%=Adt%
+  B.MED$=Med$
+  B.RES$=Res$
+  B.FFM$=Ffm$
+  APPEND
+  GIPRINT Pat$+" -> "+Archfil$
+  CLOSE
+  USE A
+  IF lc57z%=121
+    ERASE
+    BACK
+  ENDIF
+ENDP
+
+PROC Dischg:
+  LOCAL lc58z&,dmyz1%
+  lc58z&=DAYS(DAY,MONTH,YEAR)
+  Oldval:
+  IF Dis&<>0
+    lc58z&=Dis&
+  ENDIF
+  dINIT "Discharge "+Pat$+". HN:"+Hno$
+  dDATE lc58z&,"Discharge date:",0,DAYS(DAY,MONTH,YEAR)
+  dTEXT "","Delete patient from file, or",258
+  dTEXT "","Move to Discharges buffer?",258
+  dBUTTONS "Delete",%d,"Move",%m
+  LOCK ON
+  Rt%=DIALOG
+  LOCK OFF
+  IF Rt%=0
+    GIPRINT "Values unchanged"
+  ELSEIF Rt%=100
+    ERASE
+    BACK
+    GIPRINT "Deleting Patient Details"
+  ELSEIF Rt%=109
+    IF A.WAR%/30=9
+      GIPRINT "Patient already in Discharges buffer!"
+    ELSE
+      GIPRINT "Patient moved to Discharges buffer"
+    ENDIF
+    Dis&=lc58z&
+    Newval:
+    A.WAR%=271
+    UPDATE
+  ENDIF
+ENDP
+
+PROC Oldval:
+  Pat$=A.PAT$
+  Hno$=A.HNO$
+  Gp$=A.GP$
+  Diag$=A.DIAG$
+  War%=A.WAR%
+  Con%=A.CON%
+  Dob&=A.DOB&
+  Adm&=A.ADM&
+  Dis&=A.DIS&
+  Adr$=A.ADR$
+  Adt%=A.ADT%
+  Med$=A.MED$
+  Res$=A.RES$
+  Ffm$=A.FFM$
+ENDP
+
+PROC Newval:
+  A.PAT$=Pat$
+  A.HNO$=Hno$
+  A.GP$=Gp$
+  A.DIAG$=Diag$
+  A.WAR%=Curp%+30*Curw%
+  A.CON%=Con%
+  A.DOB&=Dob&
+  A.ADM&=Adm&
+  A.DIS&=Dis&
+  A.ADR$=Adr$
+  A.ADT%=Adt%
+  A.MED$=Med$
+  A.RES$=Res$
+  A.FFM$=Ffm$
+ENDP
+
+
+
+
+PROC Blankval:
+  Dob&=0
+  Con%=1
+  Adm&=DAYS(DAY,MONTH,YEAR)
+  Hno$=""
+  Pat$="<Bloggs, Joe>"
+  Adr$=""
+  Gp$=""
+  Diag$=""
+  Adt%=1
+  Med$=""
+  Res$=""
+  Ffm$=""
+  FIRST
+  WHILE NOT EOF AND A.WAR%<>-2
+    NEXT
+  ENDWH
+  IF NOT EOF
+    Oldval:
+  ENDIF
+ENDP
+
+
+
+PROC Dt$:(pr7z&)
+  LOCAL lc59z%,lc60z%,lc61z%,lc62z$(2)
+  lc59z%=1899+pr7z&/365
+  lc60z%=1
+  lc61z%=1
+  WHILE DAYS(1,1,lc59z%+1)<=pr7z&
+    lc59z%=lc59z%+1
+  ENDWH
+  lc60z%=13
+  DO
+    lc60z%=lc60z%-1
+  UNTIL DAYS(1,lc60z%,lc59z%)<=pr7z&
+  lc61z%=pr7z&-DAYS(1,lc60z%,lc59z%)+1
+  lc62z$=RIGHT$("0"+GEN$(lc61z%,2),2)
+  RETURN lc62z$+" "+MONTH$(lc60z%)+" "+GEN$(lc59z%,4)
+ENDP
+
+
+
+PROC Regwr:
+  dINIT "Enter Registration information"
+  dEDIT Regown$,"User name:"
+  dTEXT "","Just enter whatever you want!",258
+  dTEXT "","WardRound is now FREE!",258
+  dEDIT Code$,"Code:"
+  IF DIALOG=0
+    RETURN
+  ENDIF
+  IF Regchek%:(Regown$,Code$)
+    GIPRINT "Thankyou for registering WardRound!"
+    IF EXIST("LOC::M:\APP\WARDRND.INI")
+      DELETE "LOC::M:\APP\WARDRND.INI"
+    ENDIF
+    CREATE "LOC::M:\APP\WARDRND.INI",B,A$,B$,C$
+    B.A$=Regown$
+    B.B$=Code$
+    APPEND
+    CLOSE
+  ELSE
+    Regown$=""
+    Code$=""
+    IF EXIST("LOC::M:\APP\WARDRND.INI")
+      DELETE "LOC::M:\APP\WARDRND.INI"
+    ENDIF
+    GIPRINT "Registration information incorrect! Have you registered?"
+  ENDIF
+ENDP
+
+
+
+PROC Regchek%:(pr8z$,pr9z$)
+REM This Procedure used to check
+REM registration status. Let's lose that!
+
+  LOCAL lc65z%,lc66z%,lc67z%,lc68z%,lc63z$(60)
+  LOCAL lc64z$(10)
+  lc63z$="WardFive Registered User. Permission Granted"
+  RETURN -1
+  REM The above line just returns that
+  REM WardRnd is registered. Forget all
+  REM the rest of this stuff.
+  
+  IF LEN(pr8z$)<10
+    Regown$=""
+    lc64z$=""
+    RETURN 0
+  ENDIF
+  lc63z$=LEFT$(pr8z$+lc63z$,30)
+  lc65z%=1
+  lc66z%=11
+  lc64z$=""
+  DO
+    lc67z%=lc66z%
+    lc66z%=ASC(MID$(lc63z$,lc65z%,1))
+    lc67z%=lc67z%+lc66z%
+    lc68z%=(lc67z% AND 31)+65-1
+    lc64z$=lc64z$+CHR$(lc68z%)
+    lc65z%=lc65z%+1
+    lc66z%=lc67z%
+  UNTIL lc65z%>10
+  IF lc64z$=pr9z$
+    RETURN -1
+  ELSE
+    Regown$=""
+    lc64z$=""
+    RETURN 0
+  ENDIF
+ENDP
+
+
+
+PROC Itemise:(pr10z$,pr11z$)
+  LOCAL lc69z$(255)
+  lc69z$=pr10z$
+  N%=1
+  DO
+    B%=LOC(lc69z$,pr11z$)
+    IF B%>0
+      I$(N%)=LEFT$(lc69z$,B%-1)
+      lc69z$=RIGHT$(lc69z$,LEN(lc69z$)-B%)
+    ELSE
+      IF LEN(lc69z$)>40
+        lc69z$=LEFT$(lc69z$,40)
+      ENDIF
+      I$(N%)=lc69z$
+      lc69z$=""
+    ENDIF
+    N%=N%+1
+  UNTIL lc69z$="" OR N%>10
+  WHILE N%<=10
+    I$(N%)=""
+    N%=N%+1
+  ENDWH
+ENDP
+
+REM Revtran V6.3 (1999) S3a finished.
