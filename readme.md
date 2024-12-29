@@ -6,6 +6,7 @@ I wrote this for the Psion 5mx to help doctors manage their patient lists. It wa
 
 ## WardRound (Series 3a/c/mx)
 Before WardFive, there was WardRound for the Psion 3a. You can download it here: [WardRnd.zip](https://github.com/shanemuk/psion/blob/main/wardrnd.zip) You can use the code **[NWFTTI\AS** to register as **Psion User**. 
+In the files section you will find WARDRND.OPL and WARDRND.PIC which are the source code and icon file respectively. You can use these to modify WardRound for your own needs.
 
 ## Let me know...
 If there's anything you particularly remember, please add as an Issue or post on [Bluesky](https://bsky.app/profile/shaneir.bsky.social)
