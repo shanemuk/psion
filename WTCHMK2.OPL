@@ -1,0 +1,434 @@
+PROC WATCHMAK:
+ GLOBAL a%(10),n%,m%,b%,v%, km%
+ GLOBAL ORIX%, ORIY%, MAGF%, KP%, TASK$(40), XR%, YR%
+ GLOBAL TIH$(1),REDRAW2$(40),REDRAW$(39), HISTORY$(12)
+ gCreate(0,0,480,160,1,1)
+ gUPDATE OFF
+ VALASSIG: :REM **** Assign initial values ****
+ MNCTRL: :REM **** Main control procedure ****
+ENDP
+
+PROC DRAWTR:(ox%,oy%,siz%) :REM **** Draw the Biomorph ****
+ local stp%, br%(20), bs%(20)
+ local fr%(43), lx%(20),ly%(20), nux%, nuy%, mag%
+ stp%=1
+ br%(1)=1
+ bs%(1)=0
+ lx%(1)=OX%
+ ly%(1)=OY%
+ fr%(1)=ox%
+ fr%(2)=oy%
+
+STRBR:: REM Label for the start of Development
+
+
+BR0::
+ if br%(stp%)=0
+  do
+   if stp%<2 :goto finbr:: :endif
+   stp%=stp%-1
+  until br%(stp%)<>0
+ endif
+
+  mag%=siz%/(stp%+8)
+
+VECTOR br%(stp%)
+ BR1, BR2, BR3, BR4, BR5, BR6, BR7, BR8
+ENDV
+GOTO NBP
+
+BR1::
+ REM they're all like this...  if br%(stp%)=1
+   nuy%=-a%(1)*mag%
+   nux%=0
+
+GOTO NBP
+BR2::
+   nux%=a%(2)*mag%
+   nuy%=-a%(3)*mag%
+
+GOTO NBP
+BR3::
+   nux%=a%(4)*mag%
+   nuy%=0
+
+GOTO NBP
+BR4::
+   nux%=a%(5)*mag%
+   nuy%=-a%(6)*mag%
+
+GOTO NBP
+BR5::
+			nux%=0
+			nuy%=-a%(7)*mag%
+
+GOTO NBP
+BR6::
+			nux%=-a%(5)*mag%
+			nuy%=-a%(6)*mag%
+
+GOTO NBP
+BR7::
+			nuy%=0
+			nux%=-a%(4)*mag%
+
+GOTO NBP
+BR8::
+			nux%=-a%(2)*mag%
+			nuy%=-a%(3)*mag%
+
+NBP::
+
+REM NEXT BRANCH PLEASE
+		br%(stp%+1)=br%(stp%)+1
+		bs%(stp%+1)=br%(stp%)-1
+		If br%(stp%+1)=9
+			br%(stp%+1)=1
+		endif
+		If bs%(stp%+1)=0
+			bs%(stp%+1)=8
+		endif
+
+  lx%(stp%+1)=lx%(stp%)+nux%
+  ly%(stp%+1)=ly%(stp%)+nuy%
+  
+  gAT lx%(stp%),ly%(stp%)
+  gLINETO lx%(stp%+1),ly%(stp%+1)
+  
+  br%(stp%)=bs%(stp%)
+  bs%(stp%)=0
+  stp%=stp%+1
+
+		if stp%=a%(8)
+			br%(stp%)=0
+			bs%(stp%)=0
+		endif
+	GOTO STRBR::
+FINbr::    REM End of Branch Routine
+gUPDATE
+ENDP
+ 
+PROC STRTPOS:
+ENDP
+
+PROC MNCTRL: :REM Main control Proc
+
+ TASK$=Redraw$+"S"
+ MNSTRT::
+ WHILE TASK$<>""
+ TIH$=LEFT$(TASK$,1)
+ TASK$=RIGHT$(TASK$,LEN(TASK$)-1)
+
+	IF TIH$="T" REM T=Draw main tree
+		gCLS
+		ORIX%=XR%
+		ORIY%=120-YR%
+		DRAWTR:(orix%,oriy%,magf%)
+
+ ELSEIF TIH$="P"     REM draw sizing grid
+  GRID:
+
+ ELSEIF TIH$="&"    :REM Draw selection rosette
+  gFONT 10
+  gAT 80,80 :gPRINT "c b a"
+  gAT 77,90 :gPRINT "d      h"
+  gAT 80,100 :gPRINT "e f g"
+  gAT 376,80 : gPRINT "A B C"
+  gAT 373,90 : gPRINT "H       D"
+  gAT 376,100 : gPRINT "G F E"
+
+	ELSEIF TIH$="@" :GIPRINT "Press any key to continue" :GET
+
+	ELSEIF TIH$="a" REM **** Display mutants
+		a%(1)=a%(1)-1 : DRAWTR:(150,60-yr%/2,magf%/2):
+		a%(1)=a%(1)+1 
+  GIPRINT "Drawing mutant biomorphs"
+
+ ELSEIF TIH$="b" 
+  a%(2)=a%(2)-1 : DRAWTR:(90,60-yr%/2,magf%/2):
+  a%(2)=a%(2)+1 
+
+	ELSEIF TIH$="c"
+		a%(3)=a%(3)-1 : DRAWTR:(30,60-yr%/2,magf%/2):
+		a%(3)=a%(3)+1 
+ ELSEIF TIH$="d"
+		a%(4)=a%(4)-1 : DRAWTR:(30,110-YR%/2,magf%/2):
+		a%(4)=a%(4)+1 
+	ELSEIF TIH$="e"
+		a%(5)=a%(5)-1 : DRAWTR:(30,159-yr%/2,magf%/2):
+		a%(5)=a%(5)+1 
+	ELSEIF TIH$="f"
+		a%(6)=a%(6)-1 : DRAWTR:(90,159-yr%/2,magf%/2):
+		a%(6)=a%(6)+1 
+	ELSEIF TIH$="g"
+		a%(7)=a%(7)-1 : DRAWTR:(150,159-yr%/2,magf%/2):
+		a%(7)=a%(7)+1 
+	ELSEIF TIH$="h"
+		a%(8)=a%(8)-1 : DRAWTR:(150,110-yr%/2,magf%/2):
+		a%(8)=a%(8)+1 
+
+	ELSEIF TIH$="A"
+		a%(1)=a%(1)+1 : DRAWTR:(330,60-yr%/2,magf%/2):
+		a%(1)=a%(1)-1 
+	ELSEIF TIH$="B" 
+		a%(2)=a%(2)+1 : DRAWTR:(390,60-yr%/2,magf%/2):
+		a%(2)=a%(2)-1 
+	ELSEIF TIH$="C"
+		a%(3)=a%(3)+1 : DRAWTR:(450,60-yr%/2,magf%/2):
+		a%(3)=a%(3)-1 
+	ELSEIF TIH$="D"
+		a%(4)=a%(4)+1 : DRAWTR:(450,110-yr%/2,magf%/2):
+		a%(4)=a%(4)-1 
+	ELSEIF TIH$="E"
+		a%(5)=a%(5)+1 : DRAWTR:(450,159-yr%/2,magf%/2):
+		a%(5)=a%(5)-1 
+	ELSEIF TIH$="F"
+		a%(6)=a%(6)+1 : DRAWTR:(390,159-yr%/2,magf%/2):
+		a%(6)=a%(6)-1
+	ELSEIF TIH$="G"
+		a%(7)=a%(7)+1 :DRAWTR:(330,159-yr%/2,magf%/2):
+		a%(7)=a%(7)-1
+	ELSEIF TIH$="H"
+		a%(8)=a%(8)+1 :DRAWTR:(330,110-yr%/2,magf%/2):
+		a%(8)=a%(8)-1
+	ELSEIF TIH$="S"
+		SELTR:
+	ENDIF
+	KP%=KEY :KM%=KMOD :IF KP%<>0 :KEYCTRL: :ENDIF
+ENDWH
+DO
+	KP%=GET :KM%=KMOD :KEYCTRL:
+UNTIL TASK$<>""
+
+GOTO MNSTRT::
+ENDP
+
+PROC KEYCTRL:
+REM CONTROLS THE ACTION WHEN A KEY IS PRESSED
+LOCAL trv1&, trv2&, v%
+	if kp%=290
+			kp%=menuproc:
+	endif
+	if kp%=512+%x
+		STOP
+
+	ELSEIF kp%=512+%d
+	TASK$=Redraw$
+
+	elseif kp%=512+%s
+		TASK$="S"+TASK$ :REM SELECT TREE
+
+	elseif kp%=512+%o
+		dINIT "Set Y offset"
+		trv2&=YR%
+		trv1&=magf%
+		dLONG TRV1&,"Mag factor",10,300
+		dLONG TRV2&,"Y offset:",0,100
+		DIALOG
+		YR%=trv2&
+		MAGF%=trv1&
+		TASK$=redraw$ REM Redraw trees
+
+ ELSEIF kp%=%r+512
+  REM RANDOM
+  GIPRINT "Generating random biomorph"
+  v%=1
+  DO :a%(v%)=rnd*10-5 :v%=v%+1
+  UNTIL v%=8
+  a%(8)=6
+  TASK$=Redraw$+"S"
+
+	ELSEIF ((kp%=%z+512 AND km%=10) OR (kp%=512+%Z)) and Magf%>25
+		magf%=magf%-20 :TASK$=redraw$
+	ELSEIF kp%=512+%z and Magf%<300 and km%<>10
+		magf%=magf%+20 :TASK$=redraw$
+
+ ELSEIF kp%=512+%g :ENGINR:
+
+ ELSEIF kp%=512+%a :ABOUT:
+
+ ELSEIF kp%=512+%e :EXAMP:
+
+ ELSEIF kp%=512+%p :TASK$="P"+TASK$
+ 
+ ELSEIF kp%=512+%* :gSAVEBIT("\opd\watch.pic") :GIPRINT "Saving bitmap"
+ ENDIF
+
+ENDP
+
+PROC GRID:
+ GIPRINT "Use Psion-O to fit biomorph to sizing grid"
+ gGREY(1) :gAT 180,120
+ gLINEBY 0,-100 :gLINEBY 120,0 :gLINEBY 0,100 :gLINEBY -120,0
+ gGREY(2)
+ENDP
+
+PROC ENGINR:
+REM This proc allows you to alter genes directly
+Local n%, a&(8)
+
+n%=0
+	DO
+		n%=n%+1
+		a&(n%)=a%(n%)
+	Until n%=7
+	a&(8)=a%(8)-1
+
+	dINIT "Engineer"
+	dPOSITION 1,0
+	dLONG a&(1),"Branch 1 Y",-10,10
+	dLONG a&(2),"Branch 2,8 X",-10,10
+	dLONG a&(3),"Branch 2 Y",-10,10
+	dLONG a&(4),"Branch 3,7 X",-10,10
+	dLONG a&(5),"Branch 4,6 X:",-10,10
+	dLONG a&(6),"Branch 4 Y:",-10,10
+	dLONG a&(7),"Branch 5 X:",-10,10
+	dLONG a&(8),"Branch level",2,9
+	v%=DIALOG
+
+IF v%<>0
+	n%=0
+	DO
+		n%=n%+1
+		a%(n%)=a&(n%)
+	Until n%=7
+	a%(8)=a&(8)+1
+	TASK$="T@&"+REDRAW2$+"S"
+ENDIF
+ENDP
+
+PROC EXAMP:
+GIPRINT "Examples procedure not available yet"
+ENDP
+
+PROC SELTR:
+
+REM This proc controls selection
+LOCAL ch%,dg%
+ch%=9
+GIPRINT "Select biomorph"
+dINIT
+dPOSITION 0,1
+dCHOICE ch%,"Select","h,g,f,e,d,c,b,a,A,B,C,D,E,F,G,H"
+dg%=DIALOG
+if dg%<>0
+ IF ch%>8
+  IF (ch%<>16 AND a%(ch%-8)<10) OR (CH%=16 AND A%(8)<10)
+   a%(ch%-8)=a%(ch%-8)+1
+  ELSE PRINT chr$(7) :GIPRINT "Genetic limits reached!"
+  ENDIF
+
+ ELSEIF ch%<9
+
+  IF (ch%=1 AND a%(8)>3) OR (ch%<>1 AND a%(9-ch%)>-10)
+   a%(9-ch%)=a%(9-ch%)-1
+  ELSE PRINT chr$(7) :GIPRINT "Genetic limits reached!"
+  ENDIF  
+
+ ENDIF
+ 
+ TASK$=REDRAW$+"S" :ENDIF
+ENDP
+
+PROC MENUPROC:
+LOCAL rt%
+	mINIT
+	mcard "File","Exit",%x, "About & Help",%a, "Save bitmap",%*
+	mcard "Display","Settings",%o,"Redraw",%d,"Zoom in",%z,"Zoom out",%Z, "Sizing box",%p
+	mcard "Evolve","Select",%s,"Engineer",%g, "Random",%r, "Examples",%e
+	return (menu+512)
+ENDP
+
+PROC ABOUT:
+ LOCAL dr%
+ dINIT "BLIND WATCHMAKER Version 1.1"
+ dTEXT "","¸ Shane McKee 1997     shane@mckee.dnet.co.uk",2
+ dTEXT "","Based on the book & program by Richard Dawkins.",2
+ dTEXT "","http://www.niweb.com/dnet/dnethWMo/watchmak.htm",2
+ dTEXT "","This program is Freeware. Any comments, bugs, or",2
+ dTEXT "","suggestions for improvement: email me.",2
+ dTEXT "","Thankyou for trying WATCHMAK.",$102
+ DIALOG
+
+ dINIT "What now?"
+ dBUTTONS "Program", 27, "Help", %H
+ dr%=DIALOG
+
+ IF dr%=%P OR dr%=0 :RETURN :ENDIF
+
+HELPSEL::
+ dINIT 
+ dTEXT "","What's a BIOMORPH?",$400
+ dTEXT "","Blind Watchmaker?",$400
+ dTEXT "","Explain the program!",$400
+ dTEXT "","How do I register?",$600
+ 
+ dTEXT "","(Esc to return to program)"
+ dr%=DIALOG
+ IF dr%=0 :RETURN
+ ELSEIF dr%=1
+  dINIT
+  dTEXT "","A 'biomorph' is a drawing produced by a simple set of",2
+  dTEXT "","rules, defined by a set of parameters, or 'genes'.",2
+  dTEXT "","If you alter the genes, either directly, or by selection",2
+  dTEXT "","of a mutant, complex and often surprising changes may",2
+  dTEXT "","result. This has a direct parallel with living creatures",2
+  dTEXT "","and their genes, hence the term BIO-MORPH.",2
+  dTEXT "","Both living creatures and biomorphs have GENOTYPES (their",2
+  dTEXT "","genes) and PHENOTYPES (their outward appearance)."
+  DIALOG
+  
+ ELSEIF dr%=2
+  dINIT "The Blind Watchmaker"
+  dTEXT "","The classical old argument for intelligent design in the",2
+  dTEXT "","Universe hinges on complexity - how could something as",2
+  dTEXT "","complex as a watch (and thus a human, or the Universe itself)",2
+  dTEXT "","possibly come about without intelligent design?",2
+  dTEXT "","Dawkins shows, and I hope this program illustrates, how",2
+  dTEXT "","order, variety, and complexity, can arise from natural",2
+  dTEXT "","selection operating on variation, rather than prior design.",2
+  DIALOG 
+  
+ ELSEIF dr%=4
+  dINIT
+  dTEXT "","This program is Freeware. You don't need"
+  dTEXT "","to register it. Isn't that nice?"
+  DIALOG
+  
+ ELSEIF dr%=3
+  dINIT
+  dTEXT "Psion-G:","Try some genetic engineering!"
+  dTEXT "Psion-R:","Throw up a random biomorph"
+  dTEXT "Psion-S:","Call the SELECT dialog, & select a mutant"
+  dTEXT "Psion-O:","Change screen settings & positions"
+  dTEXT "Psion-D:","Refresh screen display"
+  dTEXT "Psion-Z:","Zoom in/out (see Psion-O)"
+  dTEXT "Psion-P:","Draw a sizing box"
+  dTEXT "Psion-*:","Output screen to \OPD\WATCH.PIC"
+  DIALOG
+  
+ENDIF
+GOTO HELPSEL
+ENDP 
+
+PROC VALASSIG:
+ REM --This proc assigns initial values--
+
+ a%(1)=1   REM y of Br1            1 1 2   Br6=-Br4
+ a%(2)=1   REM x of Br2 (-Br8)     8 23    Br7=-Br3
+ a%(3)=1   REM y of Br2             1  43  Br8=-Br2
+ a%(4)=1   REM x of Br3 (-Br7)     78  5  
+ a%(5)=1   REM x of Br4 (-Br6)       76 4
+ a%(6)=-1  REM y of Br4             6 5
+ a%(7)=-1  REM y of Br5
+ a%(8)=7
+	XR%=240
+	YR%=20
+	
+	MAGF%=100 REM Magnification factor
+	ORIX%=XR% REM X-ORIGIN
+	ORIY%=100-YR% REM Y-ORIGIN
+	REDRAW$="T&aAbBcCdDeEfFgGhH"
+	REDRAW2$="aAbBcCdDeEfFgGhH"
+ REM @=Pause, &=Draw selection rosette
+ENDP
