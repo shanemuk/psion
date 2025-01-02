@@ -13,5 +13,8 @@ In the files section you will find WARDRND.OPL and WARDRND.PIC which are the sou
 ## Watchmaker (Series 3a+)
 The [Blind Watchmaker](https://en.wikipedia.org/wiki/The_Blind_Watchmaker) is a great book by Richard Dawkins, explaining how natural selection can work on genetic variation to evolve complex organisms. In the book he describes a computer program to generate "biomorphs" - very simple rules can be used to generate a shape, and then via mutations, you can select the next generation and so on, to produce interesting and complex "creatures". So I wrote a version for the Psion 3a. This is the [OPL file - you can download](https://github.com/shanemuk/psion/blob/main/WTCHMK2.OPL) it and translate it on your device. 
 
+## Extras
+The Psion Text Editor app (**Editor**) is a vital piece of software for editing text files on the device and the Emulator. I've included it here since it can be hard to find on-line. [Download Editor zip file](https://github.com/shanemuk/psion/blob/main/editor.zip).
+
 ## Let me know...
 If there's anything you particularly remember, please add as an Issue or post on [Bluesky](https://bsky.app/profile/shaneir.bsky.social)
