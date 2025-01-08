@@ -3,7 +3,7 @@ Back in the day, Psion handheld computers were the business. We had a little com
 
 I have made all these files **OPEN SOURCE** - you are free to take, use, modify etc.
 
-## Client_L (formerly WardFive; Series 5/5mx/7)
+## Client_L (formerly WardFive; Series 5/5mx/7): [DOWNLOAD SIS INSTALLER](https://github.com/shanemuk/psion/blob/main/client_l.sis)
 I wrote this for the Psion 5mx to help doctors manage their patient lists. It was (though I say so myself) _really handy_, and has stood the test of time. Like other Palmaris Medical Ltd software you had to purchase a registration code (sorry about that). **However**, as I'm not developing it any further (it's 2024 - let it go, Shane!), you can register for free. Here is the code: **gbh11fmpd4** and the user name is **Psion User**. Just type these in to the registration screen in Client_L and you should be good to go! If you're using the old WardFive, you can register with the code: DW@O]]REJ\
 
 ## WardRound (Series 3a/c/mx)
