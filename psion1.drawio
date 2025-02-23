@@ -102,9 +102,6 @@
         <mxCell id="alpThoM2GANmupjedChs-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=12;fontColor=default;" edge="1" parent="1" source="alpThoM2GANmupjedChs-23" target="alpThoM2GANmupjedChs-23">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="alpThoM2GANmupjedChs-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;fontFamily=Helvetica;fontSize=12;fontColor=default;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="alpThoM2GANmupjedChs-24" target="alpThoM2GANmupjedChs-24">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
