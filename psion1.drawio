@@ -5,16 +5,34 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="ITCWj5O4sKKyTJM5XGhB-1" value="" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=80;" vertex="1" parent="1">
-          <mxGeometry x="280" y="80" width="200" height="80" as="geometry" />
+          <mxGeometry x="270" y="40" width="200" height="80" as="geometry" />
         </mxCell>
         <mxCell id="ITCWj5O4sKKyTJM5XGhB-2" value="" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=80;direction=west;flipH=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="80" width="200" height="80" as="geometry" />
+          <mxGeometry x="50" y="40" width="200" height="80" as="geometry" />
         </mxCell>
         <mxCell id="ITCWj5O4sKKyTJM5XGhB-3" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="120" y="200" width="280" height="80" as="geometry" />
+          <mxGeometry x="120" y="140" width="280" height="80" as="geometry" />
         </mxCell>
         <mxCell id="ITCWj5O4sKKyTJM5XGhB-4" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="120" y="320" width="280" height="80" as="geometry" />
+          <mxGeometry x="120" y="240" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ITCWj5O4sKKyTJM5XGhB-10" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.polygon;polyCoords=[[0.6,0.5],[0.6,0.13],[1,0.13],[1,0.75],[0.8,1],[0.21,1],[0,0.75],[0,0.13],[0.4,0.13],[0.4,0.5]];polyline=0;strokeColor=default;align=center;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="160" y="340" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ITCWj5O4sKKyTJM5XGhB-11" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="120" y="520" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ITCWj5O4sKKyTJM5XGhB-12" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.polygon;polyCoords=[[0,0.36],[0,0],[0.62,0],[0.62,0.73],[0.46,0.91],[0,0.91],[0,0.55],[0.31,0.55],[0.31,0.36]];polyline=0;strokeColor=default;align=center;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="120" y="640" width="260" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="ITCWj5O4sKKyTJM5XGhB-13" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.polygon;polyCoords=[[0,0],[0.4,0],[0.4,0.6],[0.6,0.6],[0.6,1],[0.2,1],[0,0.8],[0,0.25]];polyline=0;strokeColor=default;align=center;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="300" y="640" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="ITCWj5O4sKKyTJM5XGhB-14" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.polygon;polyCoords=[[0.26,0.22],[0.4,0.22],[0.4,0.07],[0.68,0.07],[0.68,0.22],[0.95,0.22],[0.95,0.52],[0.12,0.52],[0,0.37],[0,0.07],[0.26,0.07]];polyline=0;strokeColor=default;align=center;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;points=[];" vertex="1" parent="1">
+          <mxGeometry x="120" y="860" width="290" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="ITCWj5O4sKKyTJM5XGhB-15" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.polygon;polyCoords=[[0.26,0.22],[0.4,0.22],[0.4,0.07],[0.68,0.07],[0.68,0.22],[0.95,0.22],[0.95,0.52],[0.12,0.52],[0,0.37],[0,0.07],[0.26,0.07]];polyline=0;strokeColor=default;align=center;fontFamily=Helvetica;fontSize=12;fontColor=default;fillColor=default;points=[];flipV=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="890" width="290" height="270" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
