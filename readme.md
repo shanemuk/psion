@@ -1,5 +1,10 @@
 # Psion projects
-Back in the day, Psion handheld computers were the business. We had a little company called **Palmaris Medical Ltd**, and we wrote medical software for these machines. The one I was most proud of was WardFive (also known as Client_L, which was a terrible name).
+Back in the day, Psion handheld computers were the business. They were the most useful palmtops around - proper handheld computers with keyboards, rather than those stylus-driven Palm devices, which were great, but hugely limited. Psions rocked. This page exists to help you get the most out of your 1990s Psion in 2025.
+
+## Getting a Psion
+You can pick up a decent quality Psion on ebay. Visit my "What is the best Psion for me?" page to help you choose your weapon.
+
+We had a little company called **Palmaris Medical Ltd**, and we wrote medical software for these machines. The one I was most proud of was WardFive (also known as Client_L, which was a terrible name).
 
 I have made all these files **OPEN SOURCE** - you are free to take, use, modify etc.
 
