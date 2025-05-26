@@ -6,7 +6,7 @@ You can pick up a decent quality Psion on ebay. Visit my "What is the best Psion
 
 We had a little company called **Palmaris Medical Ltd**, and we wrote medical software for these machines. The one I was most proud of was WardFive (also known as Client_L, which was a terrible name).
 
-I have made all these files **OPEN SOURCE** - you are free to take, use, modify etc.
+I have made all of my files **OPEN SOURCE** - you are free to take, use, modify etc.
 
 ## Bullet3a: [CLICK HERE](https://github.com/shanemuk/psion/tree/main/bullet3a)
 Bullet3a (2025) is the newest app for the Psion 3a - it's a little manager for your topics of interest, projects, shopping lists. You can add Bullets to different slots, and use the SBAR structure to keep track of them. It's designed to work with your visual cortex to unleash your productivity (well, that's the hope!). Try it, and let me know what you think.
@@ -26,6 +26,9 @@ This is an app to allow you to design and generate your own "Magic Eye" type ste
 
 ## Watchmaker (Series 3a+)
 The [Blind Watchmaker](https://en.wikipedia.org/wiki/The_Blind_Watchmaker) is a great book by Richard Dawkins, explaining how natural selection can work on genetic variation to evolve complex organisms. In the book he describes a computer program to generate "biomorphs" - very simple rules can be used to generate a shape, and then via mutations, you can select the next generation and so on, to produce interesting and complex "creatures". So I wrote a version for the Psion 3a. This is the [OPL file - you can download](https://github.com/shanemuk/psion/blob/main/WTCHMK2.OPL) it and translate it on your device. 
+
+## EMULATOR - Psion Series 3c
+You can run the emulator S3CEMUL in a DOSBOX window - just download the S3CEMULE.ZIP file above to get started. (This emulator has been rather hard to find!)
 
 ## Extras
 The Psion Text Editor app (**Editor**) is a vital piece of software for editing text files on the device and the Emulator. I've included it here since it can be hard to find on-line. [Download Editor zip file](https://github.com/shanemuk/psion/blob/main/editor.zip).
