@@ -28,7 +28,7 @@ This is an app to allow you to design and generate your own "Magic Eye" type ste
 The [Blind Watchmaker](https://en.wikipedia.org/wiki/The_Blind_Watchmaker) is a great book by Richard Dawkins, explaining how natural selection can work on genetic variation to evolve complex organisms. In the book he describes a computer program to generate "biomorphs" - very simple rules can be used to generate a shape, and then via mutations, you can select the next generation and so on, to produce interesting and complex "creatures". So I wrote a version for the Psion 3a. This is the [OPL file - you can download](https://github.com/shanemuk/psion/blob/main/WTCHMK2.OPL) it and translate it on your device. 
 
 ## EMULATOR - Psion Series 3c
-You can run the emulator S3CEMUL in a DOSBOX window - just download the S3CEMULE.ZIP file above to get started. (This emulator has been rather hard to find!)
+You can run the [emulator S3CEMUL](https://github.com/shanemuk/psion/blob/main/S3CEMULE.zip) in a DOSBOX window - just download the S3CEMULE.ZIP file above to get started. (This emulator has been rather hard to find!) DOSBOX is a DOS emulator that runs on Linux, Windows and multiple other platforms. The S3CEMUL emulator supports faster file transport speeds than the S3AEMUL (Series 3a), and contains some programs from the 3c/mx that aren't available on the 3a, such as Jotter and Files.
 
 ## Extras
 The Psion Text Editor app (**Editor**) is a vital piece of software for editing text files on the device and the Emulator. I've included it here since it can be hard to find on-line. [Download Editor zip file](https://github.com/shanemuk/psion/blob/main/editor.zip).
