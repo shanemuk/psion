@@ -2,7 +2,12 @@
 Back in the day, Psion handheld computers were the business. They were the most useful palmtops around - proper handheld computers with keyboards, rather than those stylus-driven Palm devices, which were great, but hugely limited. Psions rocked. This page exists to help you get the most out of your 1990s Psion in 2025.
 
 ## Getting a Psion
-You can pick up a decent quality Psion on ebay. Visit my "What is the best Psion for me?" page to help you choose your weapon.
+You can pick up a decent quality Psion on ebay. Visit my "What is the best Psion for me?" page (coming soon) to help you choose your weapon.
+
+## Mark My Psion
+[Some thoughts](https://github.com/shanemuk/psion/tree/main/markmypsi.md) on how to integrate a Psion into your everyday life in 2025.
+
+## Palmaris Medical
 
 We had a little company called **Palmaris Medical Ltd**, and we wrote medical software for these machines. The one I was most proud of was WardFive (also known as Client_L, which was a terrible name).
 
@@ -15,7 +20,7 @@ Bullet3a (2025) is the newest app for the Psion 3a - it's a little manager for y
 I wrote this for the Psion 5mx to help doctors manage their patient lists. It was (though I say so myself) _really handy_, and has stood the test of time. Like other Palmaris Medical Ltd software you had to purchase a registration code (sorry about that). **However**, as I'm not developing it any further (it's 2024 - let it go, Shane!), you can register for free. Here is the code: **gbh11fmpd4** and the user name is **Psion User**. Just type these in to the registration screen in Client_L and you should be good to go! If you're using the old WardFive, you can register with the code: DW@O]]REJ\
 
 ## WardRound (Series 3a/c/mx)
-Before WardFive, there was WardRound for the Psion 3a. You can download it here: [WardRnd.zip](https://github.com/shanemuk/psion/blob/main/wardrnd.zip) You can use the code **[NWFTTI\AS** to register as **Psion User**. 
+Before WardFive, there was WardRound for the Psion 3a. You can download it here: [WardRnd.zip](https://github.com/shanemuk/psion/blob/main/wardrnd.zip) You can use the code ```[NWFTTI\AS``` to register as **Psion User**. 
 In the files section you will find WARDRND.OPL and WARDRND.PIC which are the source code and icon file respectively. You can use these to modify WardRound for your own needs.
 
 ## VScroll (Series 5/5mx)
