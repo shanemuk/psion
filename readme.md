@@ -1,8 +1,8 @@
 # Psion projects
-Back in the day, Psion handheld computers were the business. They were the most useful palmtops around - proper handheld computers with keyboards, rather than those stylus-driven Palm devices, which were great, but hugely limited. Psions rocked. This page exists to help you get the most out of your 1990s Psion in 2025.
+Back in the day (1990s to early 2000s), Psion handheld computers were the business. They were the most useful palmtops around - proper handheld computers with keyboards, rather than those stylus-driven Palm devices, which were great, but hugely limited. Psions rocked. This page exists to help you get the most out of your 1990s Psion in 2025.
 
 ## Getting a Psion
-You can pick up a decent quality Psion on ebay. Visit my "What is the best Psion for me?" page (coming soon) to help you choose your weapon.
+You can pick up a decent quality Psion on ebay. Visit my "What is the best Psion for me?" page (coming soon) to help you choose your weapon. (There are several options available, from the sturdy Organiser, to the Series 3, Series 3a/c/mx and then the next level Series 5/5mx and others!). I love both my 3mx and 5mx.
 
 ## Mark My Psion
 [Some thoughts](https://github.com/shanemuk/psion/tree/main/markmypsi.md) on how to integrate a Psion into your everyday life in 2025.
@@ -36,7 +36,7 @@ The [Blind Watchmaker](https://en.wikipedia.org/wiki/The_Blind_Watchmaker) is a 
 You can run the [emulator S3CEMUL](https://github.com/shanemuk/psion/blob/main/S3CEMULE.zip) in a DOSBOX window - just download the S3CEMULE.ZIP file above to get started. (This emulator has been rather hard to find!) DOSBOX is a DOS emulator that runs on Linux, Windows and multiple other platforms. The S3CEMUL emulator supports faster file transport speeds than the S3AEMUL (Series 3a), and contains some programs from the 3c/mx that aren't available on the 3a, such as Jotter and Files.
 
 ## Extras
-The Psion Text Editor app (**Editor**) is a vital piece of software for editing text files on the device and the Emulator. I've included it here since it can be hard to find on-line. [Download Editor zip file](https://github.com/shanemuk/psion/blob/main/editor.zip).
+The Psion Text Editor app (**Editor**) is a vital piece of software for editing text files on the 5mx and the Emulator. I've included it here since it can be hard to find on-line. [Download Editor zip file](https://github.com/shanemuk/psion/blob/main/editor.zip).
 
 ## Let me know...
 If there's anything you particularly remember, please add as an Issue or post on [Bluesky](https://bsky.app/profile/shaneir.bsky.social)
