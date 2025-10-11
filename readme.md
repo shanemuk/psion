@@ -19,6 +19,9 @@ Bullet3a (2025) is the newest app for the Psion 3a - it's a little manager for y
 ## Client_L (formerly WardFive; Series 5/5mx/7): [DOWNLOAD SIS INSTALLER](https://github.com/shanemuk/psion/blob/main/client_l.sis)
 I wrote this for the Psion 5mx to help doctors manage their patient lists. It was (though I say so myself) _really handy_, and has stood the test of time. Like other Palmaris Medical Ltd software you had to purchase a registration code (sorry about that). **However**, as I'm not developing it any further (it's 2024 - let it go, Shane!), you can register for free. Here is the code: **gbh11fmpd4** and the user name is **Psion User**. Just type these in to the registration screen in Client_L and you should be good to go! If you're using the old WardFive, you can register with the code: DW@O]]REJ\
 
+## HebRead: [DOWNLOAD](https://github.com/shanemuk/psion/blob/main/HEBREAD.SIS) (Series 5/5mx)
+This was supposed to be a Hebrew file viewer - I don't speak (much) Hebrew, but a Jewish friend wanted to read Palm "Aportis Doc" pdb files on his Psion, so this was what I came up with. However it ALSO allows you to read other documents compressed in the Aportis Doc / TealDoc format, and it's pretty functional. Have fun!
+
 ## WardRound (Series 3a/c/mx)
 Before WardFive, there was WardRound for the Psion 3a. You can download it here: [WardRnd.zip](https://github.com/shanemuk/psion/blob/main/wardrnd.zip) You can use the code ```[NWFTTI\AS``` to register as **Psion User**. 
 In the files section you will find WARDRND.OPL and WARDRND.PIC which are the source code and icon file respectively. You can use these to modify WardRound for your own needs.
